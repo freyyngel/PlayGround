@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f3e7d0" />
+  <meta name="description" content="PEE 50: one van, fifty state restrooms, and a nation holding its breath. A cartoon American road-trip game." />
+  <title>PEE 50 — The Great American Relief Run</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2315263c'/%3E%3Cpath d='M32 11c7 10 13 17 13 24a13 13 0 0 1-26 0c0-7 6-14 13-24Z' fill='%2363bce2'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="top-stripe" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="PEE 50 home">
+      <span class="brand-badge" aria-hidden="true">
+        <svg viewBox="0 0 48 48" role="presentation">
+          <path d="M24 7c5 8 10 13 10 19a10 10 0 0 1-20 0c0-6 5-11 10-19Z" fill="currentColor"/>
+          <path d="M18 27c1 5 5 8 10 7" fill="none" stroke="#f3e7d0" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-type">
+        <span class="brand-word">PEE<em>50</em></span>
+        <span class="brand-sub">The Great American Relief Run</span>
+      </span>
+    </a>
+
+    <div class="top-stats" aria-label="Run statistics">
+      <div class="stat">
+        <span class="stat-label">States</span>
+        <strong id="progressText">0/50</strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Time</span>
+        <strong id="timeText">0:00</strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Score</span>
+        <strong id="scoreText">0</strong>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn states-btn" id="statesBtn" type="button" aria-label="Browse all states">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <span>States</span>
+      </button>
+      <button class="icon-btn" id="soundBtn" type="button" aria-label="Mute sound" aria-pressed="false">
+        <svg class="sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 8.5c1.7 1.7 1.7 5.3 0 7M18.7 6c3 3 3 9 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg class="sound-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="m16 9 5 6m0-6-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-btn" id="helpBtn" type="button" aria-label="How to play">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.8 9.2a2.4 2.4 0 0 1 4.7.5c0 1.7-2.4 1.8-2.4 3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="map-card" aria-label="Road trip map">
+      <div class="map-toolbar">
+        <div class="route-summary">
+          <span class="route-kicker" id="routeKicker">Next stop</span>
+          <strong class="route-title" id="routeTitle">Pick a rest stop</strong>
+        </div>
+        <div class="route-meta" id="routeMeta">49 states left · tap the map or open the state list</div>
+      </div>
+
+      <div class="map-frame" id="mapFrame">
+        <canvas id="map" role="img" aria-label="Map of the United States with a rest stop pin in each state. Tap a state to drive there.">
+          Your browser does not support canvas. Use the state list to play.
+        </canvas>
+        <div class="map-grain" aria-hidden="true"></div>
+        <div class="map-legend" aria-hidden="true">
+          <span><i class="swatch open"></i>Open</span>
+          <span><i class="swatch stamped"></i>Stamped</span>
+          <span><i class="swatch van"></i>You</span>
+        </div>
+        <div class="map-tip" id="mapTip" hidden></div>
+        <div class="map-toast" id="mapToast" role="status" aria-live="polite"></div>
+        <div class="map-flash" id="mapFlash" aria-hidden="true"></div>
+      </div>
+
+      <div class="dash">
+        <div class="bladder-wrap">
+          <div class="bladder-head">
+            <span>Bladder pressure</span>
+            <strong id="bladderPct">0%</strong>
+          </div>
+          <div class="bladder-track" role="progressbar" aria-label="Bladder pressure" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bladderBar">
+            <div class="bladder-fill" id="bladderFill"></div>
+            <span class="bladder-tick" style="left:25%"></span>
+            <span class="bladder-tick" style="left:50%"></span>
+            <span class="bladder-tick" style="left:75%"></span>
+            <div class="bladder-bubbles" aria-hidden="true"></div>
+          </div>
+          <div class="bladder-hint" id="bladderHint">All clear. For now.</div>
+        </div>
+
+        <button class="clench-btn" id="clenchBtn" type="button" aria-pressed="false">
+          <span class="clench-glyph" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M8 7c4 0 5 3 8 3s4-3 8-3v9c0 6-4 10-8 10s-8-4-8-10V7Z" fill="currentColor"/><path d="M11 13h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".55"/></svg>
+          </span>
+          <span class="clench-copy"><strong>Clench</strong><small>hold to slow the urge</small></span>
+          <span class="clench-key">Space</span>
+        </button>
+
+        <div class="pants-wrap">
+          <span class="pants-label">Spare pants</span>
+          <div class="pants-meter" id="pantsMeter" aria-label="3 spare pants"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel mobile-nearest-panel" aria-label="Closest rest stops">
+      <div class="panel-head">
+        <span>Closest relief</span>
+        <span id="mobileNearestCount">49 left</span>
+      </div>
+      <div class="nearest-list" id="mobileNearestList"></div>
+      <button class="mobile-browse-btn" id="mobileAllBtn" type="button">Browse all 50 states →</button>
+    </section>
+
+    <aside class="sidebar" aria-label="Route details">
+      <section class="panel next-panel">
+        <span class="panel-kicker">Your route</span>
+        <h2 id="nextName">Choose a rest stop</h2>
+        <p id="nextMeta">Tap any state pin on the map. The van does the driving.</p>
+        <div class="next-actions">
+          <button class="small-btn light" id="allStatesBtn" type="button">All 50 states</button>
+          <button class="small-btn ghost" id="nearestBtn" type="button">Show nearest</button>
+        </div>
+      </section>
+
+      <section class="panel nearest-panel">
+        <div class="panel-head">
+          <span>Closest relief</span>
+          <span id="nearestCount">49 left</span>
+        </div>
+        <div class="nearest-list" id="nearestList"></div>
+      </section>
+
+      <section class="panel log-panel">
+        <div class="panel-head">
+          <span>Road log</span>
+          <span class="live-dot"><i></i>Live</span>
+        </div>
+        <ol class="road-log" id="roadLog"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span>One nation, under pressure.</span>
+    <span>Map data: PublicaMundi / U.S. Census. Made for the open road.</span>
+  </footer>
+
+  <div class="overlay start-overlay" id="startOverlay">
+    <div class="start-card">
+      <div class="start-left">
+        <span class="eyebrow">An American road-trip game</span>
+        <h1 class="game-title"><span>PEE</span><em>50</em></h1>
+        <p class="start-tag">One van. Fifty state restrooms.<br />A nation holds its breath.</p>
+        <div class="title-stars" aria-hidden="true">★ ★ ★ ★ ★</div>
+      </div>
+      <div class="start-right">
+        <p class="start-lede">The rules are simple. The bladder is not.</p>
+        <ol class="how-list">
+          <li><span>01</span><p>Tap any state. The van drives there automatically.</p></li>
+          <li><span>02</span><p>Arrive, relieve yourself, and stamp the map. Again and again.</p></li>
+          <li><span>03</span><p>Keep pressure below 100%. Hold <b>CLENCH</b> on long hauls.</p></li>
+        </ol>
+        <button class="primary-btn" id="startBtn" type="button" aria-label="Start">Start the relief run <span>→</span></button>
+        <p class="disclaimer">Cartoon road-trip nonsense. No actual Americans are involved.</p>
+        <p class="best-line" id="bestLine" hidden></p>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="states-dialog" id="statesDialog">
+    <div class="dialog-head">
+      <div>
+        <span class="panel-kicker">The full itinerary</span>
+        <h2>All 50 states</h2>
+      </div>
+      <button class="close-btn" id="closeStatesBtn" type="button" aria-label="Close state list">×</button>
+    </div>
+    <div class="dialog-body">
+      <section class="dialog-nearest">
+        <h3>Closest relief</h3>
+        <div class="nearest-list dialog-nearest-list" id="dialogNearest"></div>
+      </section>
+      <div class="state-grid" id="stateGrid"></div>
+    </div>
+  </dialog>
+
+  <dialog class="help-dialog" id="helpDialog">
+    <div class="dialog-head">
+      <div>
+        <span class="panel-kicker">Field guide</span>
+        <h2>How to pee in 50 states</h2>
+      </div>
+      <button class="close-btn" id="closeHelpBtn" type="button" aria-label="Close help">×</button>
+    </div>
+    <div class="help-body">
+      <div class="help-grid">
+        <div><span class="help-num">1</span><h3>Pick a state</h3><p>Tap a pin on the map or use the state list. Tiny New England states are easier in the list.</p></div>
+        <div><span class="help-num">2</span><h3>Watch the tank</h3><p>Pressure climbs with time and distance. Hit 100% and you lose a spare pair of pants. Lose all three and the run ends.</p></div>
+        <div><span class="help-num">3</span><h3>Clench wisely</h3><p>Hold the CLENCH button or Space to slow the urge. It also slows the van, so don’t overdo it.</p></div>
+        <div><span class="help-num">4</span><h3>Chase perfect relief</h3><p>Arrive with 55% pressure or more for a Perfect Relief bonus. Finish all 50 for the big score.</p></div>
+      </div>
+      <p class="help-note">Best score is saved on this device. Runs are short. Dignity is optional.</p>
+      <button class="primary-btn compact" id="helpStartBtn" type="button">Got it</button>
+    </div>
+  </dialog>
+
+  <div class="overlay end-overlay" id="endOverlay" hidden>
+    <div class="end-card">
+      <span class="end-stamp" id="endStamp">50/50</span>
+      <span class="eyebrow" id="endKicker">Run complete</span>
+      <h2 class="end-title" id="endTitle">Coast to coast.</h2>
+      <p class="end-sub" id="endSub">You have relieved yourself in all fifty states.</p>
+      <div class="result-grid">
+        <div><span>Time</span><strong id="endTime">0:00</strong></div>
+        <div><span>States</span><strong id="endStates">50/50</strong></div>
+        <div><span>Accidents</span><strong id="endAccidents">0</strong></div>
+        <div><span>Score</span><strong id="endScore">0</strong></div>
+      </div>
+      <div class="rank-line" id="endRank">National treasure.</div>
+      <div class="end-actions">
+        <button class="primary-btn" id="againBtn" type="button">Run it back <span>↻</span></button>
+        <button class="secondary-btn" id="shareBtn" type="button">Copy brag</button>
+      </div>
+      <p class="best-line" id="endBest"></p>
+    </div>
+  </div>
+
+  <div class="sr-only" id="live" aria-live="polite"></div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>
